@@ -5,4 +5,4 @@ pip install pygame\
 pip install keyboard\
 pip install random\
 pip install time\
-pip install tkinter\
+pip install tkinter
