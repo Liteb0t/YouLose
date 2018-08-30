@@ -5,4 +5,7 @@ pip install pygame\
 pip install keyboard\
 pip install random\
 pip install time\
-pip install tkinter
+pip install tkinter\
+\
+INFO\
+Work in progress of an inaccurate youtube simulator with nice graphics
