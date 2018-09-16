@@ -1,9 +1,9 @@
-import pygame as pg
 import random as rnd
 import keyboard as key
 import time
 from tkinter import *
 from tkinter.font import Font
+from pygame.font import *
 
 ###Function###
 Play_YL3=False
@@ -15,6 +15,8 @@ state_settings_button=0
 state_yl1_button=0
 state_yl3_button=0
 Window=0
+stat_timer=1
+money=200
 s_icon_open=False
 closepos=(0,0)
 Settings_open=False
@@ -30,9 +32,18 @@ def MOUSE():
     click=pg.mouse.get_pressed()
 
 def NECESSITIES():
-    global mouse_pos,click,open
+    global mouse_pos,click,open,money
     mouse_pos = pg.mouse.get_pos()
     click = pg.mouse.get_pressed()
+    if key.is_pressed('0'):
+        money=money+1
+        UPDATE_ALL()
+    if key.is_pressed('9'):
+        money=money+0.01
+        UPDATE_ALL()
+    if key.is_pressed('-'):
+        money=money-0.01
+        UPDATE_ALL()
     for event in pg.event.get():
         print(event)
         if event.type==pg.QUIT:
@@ -40,6 +51,43 @@ def NECESSITIES():
             quit()
     pg.display.update()
     clock.tick(60)
+
+def TEXT_OBJECTS(text,font):
+    Text_surface=font.render(text,False,white)
+    return Text_surface,Text_surface.get_rect()
+
+def MSG_DISPLAY(text,x,y):
+    global money
+    Med_text=pg.font.Font('C:\Windows\Fonts\COUR.ttf',50)
+    TextSurf,TextRect=TEXT_OBJECTS(text,Med_text)
+    TextRect.center=((x-120)+(len(str(money))*15),y)
+    disp.blit(TextSurf,TextRect)
+
+def MONEY_ROUND():
+    global money
+    money=money*100
+    money=int(money)
+    money=money/100
+
+stat_cover=pg.image.load('money_box.png')
+def STAT_COVER(x,y):
+    disp.blit(stat_cover,(x,y))
+
+def UPDATE_STATS_TIMED():
+    global stat_timer
+    stat_timer=stat_timer-1
+    if stat_timer<0:
+        stat_timer=30
+        MONEY_ROUND()
+        money_disp='£'+str(money)
+        STAT_COVER(1550,130)
+        MSG_DISPLAY(money_disp,1700,160)
+def UPDATE_ALL():
+    global stat_timer
+    stat_timer=30
+    MONEY_ROUND()
+    STAT_COVER(1550, 130)
+    MSG_DISPLAY('£'+str(money), 1700, 160)
 
 def YE_OLDE():
     Relevant=True
@@ -122,7 +170,7 @@ def YE_OLDE():
         global QUALITY
         QUALITY = 6
 
-    ######################################################
+    #######################################################
     welcome_label = Label(root, text='Welcome 2 TwitchSim')
     Name = StringVar()
     namechannel_label = Label(root, text='Name ur channel')
@@ -192,7 +240,7 @@ def YE_OLDE():
                 stream = False
             else:
                 rec_done = False
-                # root=Tk()
+                #root=Tk()
                 text = Text(root)
                 text.configure(font=("Courier new", 16, "bold"))
                 while rec_done == False:
@@ -335,8 +383,8 @@ def REL_ALL_START():
     disp.blit(YL3_1,(1050,560))
 
 def MOUSE_HOVER_BUTTON():
-    global state_info_button,state_settings_button,state_yl1_button,state_yl3_button,Play_YL3,Play_YL1,Open_settings\
-    ,Open_info
+    global state_info_button,state_settings_button,state_yl1_button,state_yl3_button,Play_YL3,Play_YL1,\
+    Open_settings,Open_info
     if 550<mouse_pos[0]<850 and 400<mouse_pos[1]<460:
         if state_info_button == 0:
             disp.blit(info_2, (550, 400))
@@ -375,6 +423,7 @@ def MOUSE_HOVER_BUTTON():
             REL_ALL_YL3()
         elif 550<mouse_pos[0]<850 and 560<mouse_pos[1]<620:   #yl1
             Play_YL1=True
+            YE_OLDE()
         elif 1050<mouse_pos[0]<1350 and 400<mouse_pos[1]<460: #settings
             Open_settings=True
         elif 550<mouse_pos[0]<850 and 400<mouse_pos[1]<460:   #info
@@ -388,6 +437,7 @@ def REL_ALL_YL3():
     WI2(635,20)
     WI1(325,20)
     WI0(15,20)
+    UPDATE_ALL()
     if Window==0:
         URL_BOTS(1510, 20)
         WINC(20,75)
@@ -418,6 +468,7 @@ while open:
     while Play_YL3==True:
         BUTTON_WINDOW()
         NECESSITIES()
+        UPDATE_STATS_TIMED()
         if Settings_open:
             SETTINGS_BUTTONS()
     if Play_YL1==True:
