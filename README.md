@@ -8,5 +8,5 @@ pip install time\
 pip install tkinter\
 \
 INFO\
-Work in progress of an inaccurate youtube simulator with nice graphics
+Work in progress of an inaccurate youtube simulator with nice graphics\
 update soon as of 16/10
