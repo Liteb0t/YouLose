@@ -1,8 +1,8 @@
-import random as rnd
+import pygame as pg
+import random as rnjuzus
 import keyboard as key
 import time
 from tkinter import *
-from tkinter.font import Font
 from pygame.font import *
 
 ###Function###
@@ -10,13 +10,15 @@ Play_YL3=False
 Play_YL1=False
 Open_info=False
 Open_settings=False
+Stats=(0,0)
 state_info_button=0
 state_settings_button=0
 state_yl1_button=0
 state_yl3_button=0
-Window=0
+Window=1
+money=500
+channelName='mightypaw'
 stat_timer=1
-money=200
 s_icon_open=False
 closepos=(0,0)
 Settings_open=False
@@ -32,9 +34,9 @@ def MOUSE():
     click=pg.mouse.get_pressed()
 
 def NECESSITIES():
-    global mouse_pos,click,open,money
-    mouse_pos = pg.mouse.get_pos()
-    click = pg.mouse.get_pressed()
+    global mouse_pos,click,open,Stats,money
+    mouse_pos=pg.mouse.get_pos()
+    click=pg.mouse.get_pressed()
     if key.is_pressed('0'):
         money=money+1
         UPDATE_ALL()
@@ -56,11 +58,11 @@ def TEXT_OBJECTS(text,font):
     Text_surface=font.render(text,False,white)
     return Text_surface,Text_surface.get_rect()
 
-def MSG_DISPLAY(text,x,y):
-    global money
+def MSG_DISPLAY(text,subject,x,y):
+    global med_text,Subs
     Med_text=pg.font.Font('C:\Windows\Fonts\COUR.ttf',50)
     TextSurf,TextRect=TEXT_OBJECTS(text,Med_text)
-    TextRect.center=((x-120)+(len(str(money))*15),y)
+    TextRect.center=((x-120)+(len(str(subject))*15),y)
     disp.blit(TextSurf,TextRect)
 
 def MONEY_ROUND():
@@ -69,25 +71,104 @@ def MONEY_ROUND():
     money=int(money)
     money=money/100
 
+def MOUSE_HOVER_BUTTON():
+    global state_info_button,state_settings_button,state_yl1_button,state_yl3_button,Play_YL3,Play_YL1,\
+    Open_settings,Open_info
+    if 550<mouse_pos[0]<850 and 400<mouse_pos[1]<460:
+        if state_info_button == 0:
+            disp.blit(info_2, (550, 400))
+            state_info_button = 1
+    elif state_info_button == 1 and not 550<mouse_pos[0]<850 or not 400<mouse_pos[1]<460:
+            disp.blit(info_1, (550, 400))
+            state_info_button = 0
+
+    if 1050<mouse_pos[0]<1350 and 400<mouse_pos[1]<460:
+        if state_settings_button == 0:
+            disp.blit(settings_2, (1050, 400))
+            state_settings_button = 1
+    elif state_settings_button == 1 and not 1050 < mouse_pos[0] < 1350 or not 400 < mouse_pos[1] < 460:
+            disp.blit(settings_1, (1050, 400))
+            state_settings_button = 0
+
+    if 550<mouse_pos[0]<850 and 560<mouse_pos[1]<620:
+        if state_yl1_button == 0:
+            disp.blit(YL1_2, (550, 560))
+            state_yl1_button = 1
+    elif state_yl1_button == 1 and not 550 < mouse_pos[0] < 850 or not 560 < mouse_pos[1] < 620:
+            disp.blit(YL1_1, (550, 560))
+            state_yl1_button = 0
+
+    if 1050<mouse_pos[0]<1350 and 560<mouse_pos[1]<620:
+        if state_yl3_button==0:
+            disp.blit(YL3_2,(1050,560))
+            state_yl3_button=1
+    elif state_yl3_button==1 and not 1050<mouse_pos[0]<1350 or not 560<mouse_pos[1]<620:
+        disp.blit(YL3_1,(1050,560))
+        state_yl3_button=0
+
+    if click[0]==1:
+        if 1050<mouse_pos[0]<1350 and 560<mouse_pos[1]<620:   #yl3
+            Play_YL3=True
+            REL_ALL_YL3()
+        elif 550<mouse_pos[0]<850 and 560<mouse_pos[1]<620:   #yl1
+            Play_YL1=True
+            YE_OLDE()
+        elif 1050<mouse_pos[0]<1350 and 400<mouse_pos[1]<460: #settings
+            Open_settings=True
+        elif 550<mouse_pos[0]<850 and 400<mouse_pos[1]<460:   #info
+            Open_info=True
+        else:
+            pass
+
+def REL_ALL_YL3():
+    BACK(0,0)
+    SETTINGS_ICON_REL(947,5)
+    WI2(635,20)
+    WI1(325,20)
+    WI0(15,20)
+    WINDOW_BACKGROUND()
+    UPDATE_ALL()
+    if Window==0:
+        URL_BOTS(1510, 20)
+        WINC(330,75)
+    elif Window==1:
+        URL_RECORD(1510, 20)
+        WINC(20,75)
+    else:
+        URL_UPLOAD(1510,20)
+        CH_PROFILE()
+        WINC(640,75)
+
+def CLICK_EVENT_CHANNEL():
+    if 280<mouse_pos[0]<880 and 90<mouse_pos[1]<170 and click[0]==1:
+        CH_RENAME()
+
 stat_cover=pg.image.load('money_box.png')
 def STAT_COVER(x,y):
     disp.blit(stat_cover,(x,y))
 
 def UPDATE_STATS_TIMED():
-    global stat_timer
+    global stat_timer,money
     stat_timer=stat_timer-1
     if stat_timer<0:
-        stat_timer=30
+        stat_timer=5
+        STAT_COVER(1510,90)
         MONEY_ROUND()
-        money_disp='£'+str(money)
-        STAT_COVER(1550,130)
-        MSG_DISPLAY(money_disp,1700,160)
+        MSG_DISPLAY('£'+str(money),money,1660,120)
+        STAT_COVER(1510, 160)
+        MSG_DISPLAY(u'\u25ba'+str(Stats[0]),Stats[0], 1660, 190)
+        STAT_COVER(1510, 230)
+        MSG_DISPLAY('V' + str(Stats[1]), Stats[1], 1660, 260)
 def UPDATE_ALL():
-    global stat_timer
+    global stat_timer,money
     stat_timer=30
+    STAT_COVER(1510,90)
     MONEY_ROUND()
-    STAT_COVER(1550, 130)
-    MSG_DISPLAY('£'+str(money), 1700, 160)
+    MSG_DISPLAY('£'+str(money),money, 1660, 120)
+    STAT_COVER(1510,160)
+    MSG_DISPLAY(u'\u25ba'+str(Stats[0]),Stats[0], 1660, 190)
+    STAT_COVER(1510,230)
+    MSG_DISPLAY('V' + str(Stats[1]), Stats[1], 1660, 260)
 
 def YE_OLDE():
     Relevant=True
@@ -264,13 +345,32 @@ def YE_OLDE():
                     barL.grid(row=1, sticky=W)
                     arrowL.grid(row=2, sticky=W)
                     stopB.grid(row=1, column=1, sticky=W)
-                    root.after(500, lambda: root.destroy())
+                    root.after(500,lambda:root.destroy())
                     root.mainloop()
 
 def CLICK_EVENT_WINDOW():
     WI0(15, 20)
     WI1(325, 20)
     WI2(635, 20)
+
+def CH_RENAME():
+    global channelName,entry666,root5
+    def getName(event):
+        global channelName, entry666, root5
+        channelName = entry666.get()
+        root5.destroy()
+    print('tk not work dud')
+    root5=Tk()
+    label=Label(root5,text='Rename your channel:')
+    entry666=Entry(root5,textvariable=channelName)
+    button=Button(root5,text='OK')
+    button.bind('<Button-1>',getName)
+    label.pack(side=LEFT)
+    entry666.pack()
+    button.pack(side=RIGHT)
+    root5.mainloop()
+    MSG_DISPLAY(channelName,channelName,610,125)
+    REL_CHANNEL()
 
 def SETTINGS_BUTTONS():
     global Play_YL1,Play_YL3,Open_settings,Open_info,Settings_open
@@ -280,6 +380,16 @@ def SETTINGS_BUTTONS():
         Settings_open=False
         REL_ALL_START()
 
+def REL_CHANNEL():
+    CH_PROFILE()
+    MSG_DISPLAY(channelName, channelName, 610, 125)
+
+#def REL_RECORD():
+
+
+#def REL_BOTS():
+
+
 def BUTTON_WINDOW():
     global window, Settings_open,s_icon_open,Open_settings
     if mouse_pos[1]<80 and Play_YL3==True:
@@ -287,17 +397,28 @@ def BUTTON_WINDOW():
             CLICK_EVENT_WINDOW()
             URL_RECORD(1510,20)
             WINC(20,75)
+            WINDOW_BACKGROUND()
+            #REL_RECORD()
             window=0
+            #record
+
         elif 325<mouse_pos[0]<625 and 20<mouse_pos[1]<80 and click[0]==1:
             CLICK_EVENT_WINDOW()
             URL_UPLOAD(1510,20)
             WINC(330,75)
+            WINDOW_BACKGROUND()
+            REL_CHANNEL()
             window=1
+            #channel
+
         elif 635<mouse_pos[0]<945 and 20<mouse_pos[1]<80 and click[0]==1:
             CLICK_EVENT_WINDOW()
             URL_BOTS(1510,20)
             WINC(640,75)
+            WINDOW_BACKGROUND()
+            #REL_BOTS()
             window=2
+            #bots
 
         elif 947<mouse_pos[0]<1017 and 5<mouse_pos[1]<75:
             if s_icon_open == False:
@@ -327,7 +448,7 @@ def BUTTON_WINDOW():
             Open_settings=False
 
 ###Graphics###
-bg=pg.image.load('YL3back2.png')
+bg=pg.image.load('YL3back.png')
 def BACK(bX,bY):
     disp.blit(bg,(bX,bY))
 
@@ -344,7 +465,7 @@ def SETTINGS_P(x,y):
 W0=pg.image.load('record window.png')
 def WI0(w0x,w0y):
     disp.blit(W0,(w0x,w0y))
-W1=pg.image.load('upload window.png')
+W1=pg.image.load('channel window.png')
 def WI1(w1x,w1y):
     disp.blit(W1,(w1x,w1y))
 W2=pg.image.load('bots window.png')
@@ -361,6 +482,16 @@ def SETTINGS_ICON_2(x,y):
 wc=pg.image.load('windowcover.png')
 def WINC(wcx,wcy):
     disp.blit(wc,(wcx,wcy))
+
+wb=pg.image.load('windowBackgroundv3.png')
+def WINDOW_BACKGROUND():
+    disp.blit(wb,(0,80))
+
+nb=pg.image.load('ch_name_box.png')
+img123=pg.image.load('123.png')
+def CH_PROFILE():
+    disp.blit(nb,(280,90))
+    disp.blit(img123,(10,90))
 
 def REL_ALL_START():
     global info_1,info_2,settings_1,settings_2,YL1_1,YL1_2,YL3_1,YL3_2,start_bg
@@ -382,71 +513,6 @@ def REL_ALL_START():
     disp.blit(YL1_1,(550,560))
     disp.blit(YL3_1,(1050,560))
 
-def MOUSE_HOVER_BUTTON():
-    global state_info_button,state_settings_button,state_yl1_button,state_yl3_button,Play_YL3,Play_YL1,\
-    Open_settings,Open_info
-    if 550<mouse_pos[0]<850 and 400<mouse_pos[1]<460:
-        if state_info_button == 0:
-            disp.blit(info_2, (550, 400))
-            state_info_button = 1
-    elif state_info_button == 1 and not 550<mouse_pos[0]<850 or not 400<mouse_pos[1]<460:
-            disp.blit(info_1, (550, 400))
-            state_info_button = 0
-
-    if 1050<mouse_pos[0]<1350 and 400<mouse_pos[1]<460:
-        if state_settings_button == 0:
-            disp.blit(settings_2, (1050, 400))
-            state_settings_button = 1
-    elif state_settings_button == 1 and not 1050 < mouse_pos[0] < 1350 or not 400 < mouse_pos[1] < 460:
-            disp.blit(settings_1, (1050, 400))
-            state_settings_button = 0
-
-    if 550<mouse_pos[0]<850 and 560<mouse_pos[1]<620:
-        if state_yl1_button == 0:
-            disp.blit(YL1_2, (550, 560))
-            state_yl1_button = 1
-    elif state_yl1_button == 1 and not 550 < mouse_pos[0] < 850 or not 560 < mouse_pos[1] < 620:
-            disp.blit(YL1_1, (550, 560))
-            state_yl1_button = 0
-
-    if 1050<mouse_pos[0]<1350 and 560<mouse_pos[1]<620:
-        if state_yl3_button==0:
-            disp.blit(YL3_2,(1050,560))
-            state_yl3_button=1
-    elif state_yl3_button==1 and not 1050<mouse_pos[0]<1350 or not 560<mouse_pos[1]<620:
-        disp.blit(YL3_1,(1050,560))
-        state_yl3_button=0
-
-    if click[0]==1:
-        if 1050<mouse_pos[0]<1350 and 560<mouse_pos[1]<620:   #yl3
-            Play_YL3=True
-            REL_ALL_YL3()
-        elif 550<mouse_pos[0]<850 and 560<mouse_pos[1]<620:   #yl1
-            Play_YL1=True
-            YE_OLDE()
-        elif 1050<mouse_pos[0]<1350 and 400<mouse_pos[1]<460: #settings
-            Open_settings=True
-        elif 550<mouse_pos[0]<850 and 400<mouse_pos[1]<460:   #info
-            Open_info=True
-        else:
-            pass
-
-def REL_ALL_YL3():
-    BACK(0,0)
-    SETTINGS_ICON_REL(947,5)
-    WI2(635,20)
-    WI1(325,20)
-    WI0(15,20)
-    UPDATE_ALL()
-    if Window==0:
-        URL_BOTS(1510, 20)
-        WINC(20,75)
-    elif Window==1:
-        URL_RECORD(1510, 20)
-        WINC(330,75)
-    else:
-        URL_UPLOAD(1510, 20)
-        WINC(640,75)
 url_record=pg.image.load('url-record.png')
 def URL_RECORD(x,y):
     disp.blit(url_record,(x,y))
@@ -471,5 +537,11 @@ while open:
         UPDATE_STATS_TIMED()
         if Settings_open:
             SETTINGS_BUTTONS()
+        elif Window==0:
+            pass
+        elif Window==1:
+            CLICK_EVENT_CHANNEL()
+        elif Window==2:
+            pass
     if Play_YL1==True:
         YE_OLDE()
